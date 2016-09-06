@@ -8,6 +8,9 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -124,5 +127,10 @@ public class User {
 
     public void setPhones(List<Phone> phones) {
         this.phones = phones;
+    }
+
+    public long minutesFromLastLogin() {
+        LocalDateTime lastLogin = LocalDateTime.ofInstant(this.lastLogin.toInstant(), ZoneId.systemDefault());
+        return ChronoUnit.MINUTES.between(lastLogin, LocalDateTime.now());
     }
 }
