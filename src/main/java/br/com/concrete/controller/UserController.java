@@ -28,12 +28,10 @@ public class UserController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> createUser(@RequestBody User user){
-
         Optional<User> userWithSameEmail = userRepository.findByEmail(user.getEmail());
         if(userWithSameEmail.isPresent()){
             return new ResponseEntity<Message>(new Message("E-mail já existente"),HttpStatus.CONFLICT);
         }
-
         user = userRepository.save(user);
         return new ResponseEntity<User>(user, HttpStatus.CREATED);
     }

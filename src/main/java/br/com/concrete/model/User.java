@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Email;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -53,6 +54,11 @@ public class User {
         this.uuid = UUID.randomUUID().toString();
         this.created = Calendar.getInstance();
         this.token = UUID.randomUUID().toString();
+    }
+
+    @PrePersist
+    public void onSave(){
+        this.password = new BCryptPasswordEncoder().encode(password);
     }
 
     @PreUpdate
