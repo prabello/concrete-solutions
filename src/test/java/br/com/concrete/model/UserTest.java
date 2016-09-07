@@ -1,6 +1,6 @@
 package br.com.concrete.model;
 
-import br.com.concrete.controller.UserBuilder;
+import br.com.concrete.builder.UserBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,13 +22,8 @@ public class UserTest {
     @Test
     public void ensureThatPasswordIsHashedAfterSettingIt() throws Exception {
         user.setPassword("banana");
+        user.onSave();
         assertTrue(new BCryptPasswordEncoder().matches("banana",user.getPassword()));
-    }
-
-    @Test
-    public void ensureThatPasswordStillMathOriginal(){
-        user.setPassword("banana");
-        assertTrue(user.isPasswordEquals("banana"));
     }
 
     @Test

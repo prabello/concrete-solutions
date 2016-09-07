@@ -33,7 +33,7 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("{uuid}")
     public ResponseEntity<?> searchUser(@PathVariable String uuid,@RequestHeader("token") String token){
         if(token == null){
             return new ResponseEntity<Message>(new Message("Não autorizado"),HttpStatus.UNAUTHORIZED);

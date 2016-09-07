@@ -151,6 +151,9 @@ public class User {
 
     @JsonIgnore
     public boolean isLoggedIn() {
+        if(lastLogin == null){
+            return false;
+        }
         LocalDateTime lastLogin = LocalDateTime.ofInstant(this.lastLogin.toInstant(), ZoneId.systemDefault());
         return ChronoUnit.MINUTES.between(lastLogin, LocalDateTime.now()) < 30;
     }

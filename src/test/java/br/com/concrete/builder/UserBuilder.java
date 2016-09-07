@@ -1,4 +1,4 @@
-package br.com.concrete.controller;
+package br.com.concrete.builder;
 
 import br.com.concrete.model.Phone;
 import br.com.concrete.model.User;
