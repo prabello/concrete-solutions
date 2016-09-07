@@ -1,40 +1,40 @@
 package br.com.concrete.controller;
 
+import br.com.concrete.model.Login;
 import br.com.concrete.model.User;
-import br.com.concrete.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertNotNull;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@RunWith(SpringRunner.class)
 public class LoginControllerTest {
 
-    private LoginController loginController;
-
     private User user;
-
-    @Mock
-    private UserRepository userRepository;
+    private Login login;
 
     @Before
-    public void setUp(){
-        MockitoAnnotations.initMocks(this);
-        userRepository = spy(UserRepository.class);
-        loginController = new LoginController(userRepository);
-        user = new UserBuilder().build();
-        doReturn(Optional.of(new UserBuilder().build())).when(this.userRepository).findByEmail(user.getEmail());
+    public void setUp() {
+        login = new Login("joao@silva.org","hunter2");
+        user = new UserBuilder().email("joao@silva.org").password("hunter2").build();
     }
 
     @Test
-    public void login(){
-        ResponseEntity<?> responseEntity = loginController.login(user);
-        System.out.println(responseEntity.toString());
+    public void ensureThatRegisteredUserCanLogin() {
+        given().body(this.user).and().header("Content-type", "application/json")
+                .expect().statusCode(201)
+                .when().post("/user");
+
+        User foundUser = given().body(login).and().header("Content-type", "application/json")
+                .expect().statusCode(200).when().post("/login").andReturn().as(User.class);
+
+        assertNotNull(foundUser.getCreated());
+        assertNotNull(foundUser.getToken());
     }
 
 }

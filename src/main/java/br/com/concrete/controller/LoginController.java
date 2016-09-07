@@ -1,12 +1,12 @@
 package br.com.concrete.controller;
 
+import br.com.concrete.model.Login;
 import br.com.concrete.model.Message;
 import br.com.concrete.model.User;
 import br.com.concrete.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +22,6 @@ public class LoginController {
 
     private final UserRepository userRepository;
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
     @Autowired
     public LoginController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -31,10 +29,10 @@ public class LoginController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> login(@RequestBody User user) {
-        Optional<User> foundUser = userRepository.findByEmail(user.getEmail());
+    public ResponseEntity<?> login(@RequestBody Login login) {
+        Optional<User> foundUser = userRepository.findByEmail(login.getEmail());
         if (foundUser.isPresent()) {
-            boolean passwordMatch = encoder.matches(user.getPassword(), foundUser.get().getPassword());
+            boolean passwordMatch = foundUser.get().isPasswordEquals(login.getPassword());
             if (passwordMatch) {
                 User userToLogIn = foundUser.get();
                 userToLogIn.setLastLogin(Calendar.getInstance());

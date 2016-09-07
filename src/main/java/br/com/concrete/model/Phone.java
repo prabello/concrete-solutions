@@ -1,6 +1,8 @@
 package br.com.concrete.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +24,12 @@ public class Phone {
     private String number;
     private String ddd;
 
-    public Phone(String number, String ddd) {
+    @Deprecated
+    public Phone(){
+    }
+
+    @JsonCreator
+    public Phone(@JsonProperty("number") String number,@JsonProperty("ddd")  String ddd) {
         this.number = number;
         this.ddd = ddd;
     }

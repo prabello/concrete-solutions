@@ -71,13 +71,22 @@ public class User {
     }
 
     private void hashPassword() {
-        this.password = new BCryptPasswordEncoder().encode(plainPassword);
+        this.password = new BCryptPasswordEncoder().encode(this.plainPassword);
     }
 
     @JsonSetter(value = "password")
     public void setPassword(String plainPassword) {
         this.plainPassword = plainPassword;
-        hashPassword();
+    }
+
+    public boolean isPasswordEquals(String password){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(password, this.password);
+    }
+
+    public boolean isPasswordEquals(User user){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(user.plainPassword,this.password);
     }
 
     @PreUpdate
@@ -126,6 +135,9 @@ public class User {
     }
 
     public String getPassword() {
+        if(password == null || password.isEmpty()){
+            return plainPassword;
+        }
         return password;
     }
 
