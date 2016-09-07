@@ -1,9 +1,6 @@
 package br.com.concrete.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -50,6 +47,10 @@ public class User {
 
     private String password;
 
+    @Transient
+    @JsonIgnore
+    private String plainPassword;
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Phone> phones;
 
@@ -59,9 +60,24 @@ public class User {
         this.token = UUID.randomUUID().toString();
     }
 
+    public User(String email){
+        this();
+        this.email = email;
+    }
+
     @PrePersist
     public void onSave(){
-        this.password = new BCryptPasswordEncoder().encode(password);
+        hashPassword();
+    }
+
+    private void hashPassword() {
+        this.password = new BCryptPasswordEncoder().encode(plainPassword);
+    }
+
+    @JsonSetter(value = "password")
+    public void setPassword(String plainPassword) {
+        this.plainPassword = plainPassword;
+        hashPassword();
     }
 
     @PreUpdate
@@ -109,16 +125,8 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public List<Phone> getPhones() {
@@ -129,8 +137,9 @@ public class User {
         this.phones = phones;
     }
 
-    public long minutesFromLastLogin() {
+    @JsonIgnore
+    public boolean isLoggedIn() {
         LocalDateTime lastLogin = LocalDateTime.ofInstant(this.lastLogin.toInstant(), ZoneId.systemDefault());
-        return ChronoUnit.MINUTES.between(lastLogin, LocalDateTime.now());
+        return ChronoUnit.MINUTES.between(lastLogin, LocalDateTime.now()) < 30;
     }
 }

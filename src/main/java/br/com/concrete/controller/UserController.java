@@ -41,7 +41,7 @@ public class UserController {
         Optional<User> userFound = userRepository.findByUuid(uuid);
         if(userFound.isPresent()){
             boolean tokenIsValid = userFound.get().getToken().equals(token);
-            boolean isOnTime = userFound.get().minutesFromLastLogin() > 30;
+            boolean isOnTime = userFound.get().isLoggedIn();
             if(tokenIsValid && isOnTime){
                 return new ResponseEntity<User>(userFound.get(), HttpStatus.OK);
             }
