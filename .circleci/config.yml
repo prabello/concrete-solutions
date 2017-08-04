@@ -40,8 +40,8 @@ jobs:
       # run tests!
       - run: mvn integration-test
 
-     deployment:
-      staging:
-        branch: master
-        heroku:
-          appname: foo-bar-123
+deployment:
+ staging:
+  branch: master
+  heroku:
+   appname: foo-bar-123
